@@ -8,6 +8,9 @@ ma = Marshmallow()
 
 
 def create_app(config_name):
+    """
+    Creates Flask instance, configures, registers extensions, add routes
+    """
     app = Flask(__name__)
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)

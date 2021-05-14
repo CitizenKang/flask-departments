@@ -1,5 +1,5 @@
 import uuid
-from departments_app import db, ma
+from departments_app import db
 
 
 class Department(db.Model):
