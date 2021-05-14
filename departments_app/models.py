@@ -4,7 +4,7 @@ from marshmallow import fields
 from marshmallow_sqlalchemy import auto_field
 
 
-class Departments(db.Model):
+class Department(db.Model):
     """
     Class describes departments table
     """
@@ -12,7 +12,7 @@ class Departments(db.Model):
     uuid = db.Column(db.String(36), unique=True, nullable=False)
     name = db.Column(db.String(30), index=True, nullable=False)
     long_name = db.Column(db.String(200), nullable=False)
-    employees = db.relationship('Employees', backref='role')
+    employees = db.relationship('Employee', backref='role')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -22,7 +22,7 @@ class Departments(db.Model):
         return f"{self.name} ({self.long_name}) [{self.uuid}]"
 
 
-class Employees(db.Model):
+class Employee(db.Model):
     """
     Class describes employees table
     """
@@ -34,7 +34,7 @@ class Employees(db.Model):
     phone_number = db.Column(db.String(13), nullable=True)
     email = db.Column(db.String(254), nullable=True)
     salary = db.Column(db.Float, nullable=False)
-    department_id = db.Column(db.Integer, db.ForeignKey('departments.id'))
+    department_id = db.Column(db.Integer, db.ForeignKey('department.id'))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
