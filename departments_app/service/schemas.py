@@ -1,8 +1,5 @@
 from departments_app import ma
-from models.department import Department
-from models.employee import Employee
-from marshmallow import fields
-from marshmallow_sqlalchemy import auto_field
+from departments_app.models.employee import Employee
 
 
 class DepartmentSchema(ma.Schema):

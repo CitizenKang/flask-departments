@@ -1,8 +1,8 @@
 import os
 from departments_app import create_app, db
 from flask_migrate import Migrate
-from models.department import Department
-from models.employee import Employee
+from departments_app.models.department import Department
+from departments_app.models.employee import Employee
 
 # !!!!! to delete
 from departments_app.service.schemas import department_schema, departments_schema, employee_schema, employees_schema

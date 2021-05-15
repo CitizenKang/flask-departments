@@ -2,9 +2,10 @@ from flask import request
 from flask_restful import Resource
 from marshmallow import ValidationError
 from . import rest_api
-from models.department import Department, db
+from departments_app.models.department import db, Department
 from departments_app.service.schemas import department_schema, departments_schema
 from sqlalchemy.exc import IntegrityError
+
 
 class Departments(Resource):
     def get(self, uuid: str = None):
@@ -23,11 +24,11 @@ class Departments(Resource):
             return result, 200
         return result, 404
 
-
     def post(self):
         """
         Process POST request on resource,
         Returns status code 201 and new resource
+
         """
         # Check input
         json_data = request.get_json()
