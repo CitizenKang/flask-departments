@@ -5,9 +5,8 @@ from marshmallow import fields
 from marshmallow_sqlalchemy import auto_field
 
 
-class DepartmentSchema(ma.SQLAlchemySchema):
+class DepartmentSchema(ma.Schema):
     class Meta:
-        model = Department
         # Fields to expose
         fields = ("uuid", "name", "long_name")
 
@@ -16,8 +15,6 @@ class EmployeeSchema(ma.SQLAlchemySchema):
     class Meta:
         model = Employee
         include_fk = True
-        # Fields to expose
-        # fields = ("uuid", "first_name", "last_name", "date_of_birth", "phone_number", "email", "salary")
 
     uuid = ma.auto_field()
     first_name = ma.auto_field()
@@ -27,6 +24,7 @@ class EmployeeSchema(ma.SQLAlchemySchema):
     email = ma.auto_field()
     salary = ma.auto_field()
     department_id = ma.auto_field()
+
 
 # Init schemas
 
