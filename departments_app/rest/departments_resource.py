@@ -38,8 +38,6 @@ class Departments(Resource):
             data = department_schema.load(json_data)
         except ValidationError as err:
             return err.messages, 422
-        except KeyError as err:
-            return err, 422
 
         # Try to add record to db, if records exists it raise IntegrityError
         record = Department(**data)
@@ -47,11 +45,40 @@ class Departments(Resource):
         try:
             db.session.commit()
         except IntegrityError:
-            return {}, 422
+            return {"message": "Such record already exists"}, 422
         return {"message": "Added new department", "uuid": record.uuid}, 201
 
-    def put(self):
-        pass
+    def put(self, uuid: str):
+        """ Process PUT request on resource, updating it """
+
+        # Check input
+        json_data = request.get_json()
+        if not json_data:
+            return {"message": "No input data provided"}, 400
+        # Validate and deserialize input
+        try:
+            data = department_schema.load(json_data)
+        except ValidationError as err:
+            return err.messages, 422
+
+        name = data.get("name")
+        long_name = data.get("long_name")
+        # query existing record in not found - return 404
+        db_record = Department.query.filter_by(uuid=uuid).first()
+        if not db_record:
+            return {}, 404
+
+        # update record if there is updated field
+        if name:
+            db_record.name = name
+        if long_name:
+            db_record.long_name = long_name
+
+        try:
+            db.session.commit()
+        except IntegrityError:
+            return {}, 409
+        return {"message": "resource updated"}, 200
 
     def delete(self, uuid: str):
         """
