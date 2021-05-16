@@ -28,7 +28,6 @@ class Departments(Resource):
         """
         Process POST request on resource,
         Returns status code 201 and new resource
-
         """
         # Check input
         json_data = request.get_json()
@@ -49,7 +48,7 @@ class Departments(Resource):
             db.session.commit()
         except IntegrityError:
             return {}, 422
-        return {"message": "Added new department", "uuid": record.uuid}
+        return {"message": "Added new department", "uuid": record.uuid}, 201
 
     def put(self):
         pass
