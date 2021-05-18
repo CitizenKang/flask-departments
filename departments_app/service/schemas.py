@@ -1,26 +1,25 @@
 from departments_app import ma
+from departments_app.models.department import Department
 from departments_app.models.employee import Employee
+from departments_app import db
 
 
-class DepartmentSchema(ma.Schema):
+class DepartmentSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
-        # Fields to expose
-        fields = ("uuid", "name", "long_name")
+        model = Department
+        load_instance = True
+        exclude = ['id']
+        dump_only = ("uuid",)
 
 
-class EmployeeSchema(ma.SQLAlchemySchema):
+class EmployeeSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Employee
-        include_fk = True
-
-    uuid = ma.auto_field()
-    first_name = ma.auto_field()
-    last_name = ma.auto_field()
-    date_of_birth = ma.auto_field()
-    phone_number = ma.auto_field()
-    email = ma.auto_field()
-    salary = ma.auto_field()
-    department_id = ma.auto_field()
+        load_instance = True
+        exclude = ['id']
+        dump_only = ("uuid", "department")
+        sqla_session = db.session
+    department = ma.Nested(DepartmentSchema, only=("name",))
 
 
 # Init schemas

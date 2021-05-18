@@ -14,11 +14,11 @@ class Departments(Resource):
         Returns one departments and status code 200 if proper uuid given, otherwise - 404
         Returns all departments if uuid is not given, and status code 200
         """
-        # one
+        # all
         if not uuid:
             result = departments_schema.dump(Department.query.all())
             return result, 200
-        # all
+        # one
         result = department_schema.dump(Department.query.filter_by(uuid=uuid).first())
         if result:
             return result, 200
@@ -40,13 +40,12 @@ class Departments(Resource):
             return err.messages, 422
 
         # Try to add record to db, if records exists it raise IntegrityError
-        record = Department(**data)
-        db.session.add(record)
+        db.session.add(data)
         try:
             db.session.commit()
         except IntegrityError:
             return {"message": "Such record already exists"}, 422
-        return {"message": "Added new department", "uuid": record.uuid}, 201
+        return {"message": "Added new department", "uuid": data.uuid}, 201
 
     def put(self, uuid: str):
         """ Process PUT request on resource, updating it """
@@ -57,22 +56,20 @@ class Departments(Resource):
             return {"message": "No input data provided"}, 400
         # Validate and deserialize input
         try:
-            data = department_schema.load(json_data)
+            data = department_schema.load(json_data, partial=("name", "long_name"))
         except ValidationError as err:
             return err.messages, 422
 
-        name = data.get("name")
-        long_name = data.get("long_name")
         # query existing record in not found - return 404
         db_record = Department.query.filter_by(uuid=uuid).first()
         if not db_record:
             return {}, 404
 
         # update record if there is updated field
-        if name:
-            db_record.name = name
-        if long_name:
-            db_record.long_name = long_name
+        if data.name:
+            db_record.name = data.name
+        if data.long_name:
+            db_record.long_name = data.long_name
 
         try:
             db.session.commit()
@@ -93,4 +90,17 @@ class Departments(Resource):
         return {}, 404
 
 
+class EEmployees(Resource):
+    def get(self, uuid: str, employee_uuid:str=None):
+        if not employee_uuid:
+            result = departments_schema.dump(Department.query.filter_by(uuid=uuid).all())
+            return result, 200
+        # one
+        result = department_schema.dump(Department.query.filter_by(uuid=uuid).first())
+        if result:
+            return result, 200
+        return result, 404
+
+
 rest_api.add_resource(Departments, 'departments/', 'departments/<uuid>', strict_slashes=False)
+rest_api.add_resource(EEmployees, 'departments/<uuid>', 'departments/<employee_uuid>', strict_slashes=False)

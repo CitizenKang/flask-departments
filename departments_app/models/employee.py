@@ -14,7 +14,8 @@ class Employee(db.Model):
     phone_number = db.Column(db.String(13), nullable=True)
     email = db.Column(db.String(254), nullable=True)
     salary = db.Column(db.Float, nullable=False)
-    department_id = db.Column(db.Integer, db.ForeignKey('department.id'))
+    department_id = db.Column(db.Integer, db.ForeignKey("department.id"), nullable=False)
+    department = db.relationship("Department", backref=db.backref("department", lazy=True))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

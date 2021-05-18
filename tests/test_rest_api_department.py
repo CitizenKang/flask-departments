@@ -15,9 +15,6 @@ class DepartmentResourceTestCase(unittest.TestCase):
         d2 = Department(name="Test_Department_2", long_name="Test long name department 2")
         db.session.add_all([d1, d2])
         db.session.commit()
-        # store test data records uuid for future tests
-        self.test_record_1_uuid = d1.uuid
-        self.test_record_2_uuid = d2.uuid
         self.client = self.app.test_client()
 
     def tearDown(self):
