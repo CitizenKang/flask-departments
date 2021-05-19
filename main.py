@@ -1,8 +1,6 @@
 import os
-import click
-import sys
-from departments_app import create_app, db
 from flask_migrate import Migrate
+from departments_app import create_app, db
 from departments_app.models.department import Department
 from departments_app.models.employee import Employee
 
@@ -17,6 +15,7 @@ migrate = Migrate(app, db)
 
 @app.shell_context_processor
 def make_shell_context():
+    """ enable objects to flask shell """
     return dict(db=db, Department=Department, Employee=Employee,
                 department_schema=department_schema, departments_schema=departments_schema,
                 employee_schema=employee_schema, employees_schema=employees_schema)

@@ -2,8 +2,9 @@ from flask import request
 from flask_restful import Resource
 from marshmallow import ValidationError
 from . import rest_api
-from departments_app.models.department import db, Department
+from departments_app.models.department import Department
 from departments_app.service.schemas import department_schema, departments_schema
+from departments_app import db
 from sqlalchemy.exc import IntegrityError
 
 
@@ -11,8 +12,10 @@ class Departments(Resource):
     def get(self, uuid: str = None):
         """
         Process GET request on resource,
-        Returns one departments and status code 200 if proper uuid given, otherwise - 404
-        Returns all departments if uuid is not given, and status code 200
+        Returns collection of all departments if uuid is not given, and response status code 200
+        Returns one department object and status code 200 if uuid is given
+        In other cases returns response code - 404
+
         """
         # all
         if not uuid:
@@ -40,9 +43,9 @@ class Departments(Resource):
             return err.messages, 422
 
         # Try to add record to db, if records exists it raise IntegrityError
-        db.session.add(data)
+
         try:
-            db.session.commit()
+            Department.create(data)
         except IntegrityError:
             return {"message": "Such record already exists"}, 422
         return {"message": "Added new department", "uuid": data.uuid}, 201
@@ -84,23 +87,10 @@ class Departments(Resource):
         """
         db_record = Department.query.filter_by(uuid=uuid).first()
         if uuid and db_record:
-            db.session.delete(db_record)
-            db.session.commit()
+            Department.delete(db_record)
             return {}, 204
         return {}, 404
 
 
-class EEmployees(Resource):
-    def get(self, uuid: str, employee_uuid:str=None):
-        if not employee_uuid:
-            result = departments_schema.dump(Department.query.filter_by(uuid=uuid).all())
-            return result, 200
-        # one
-        result = department_schema.dump(Department.query.filter_by(uuid=uuid).first())
-        if result:
-            return result, 200
-        return result, 404
-
-
 rest_api.add_resource(Departments, 'departments/', 'departments/<uuid>', strict_slashes=False)
-rest_api.add_resource(EEmployees, 'departments/<uuid>', 'departments/<employee_uuid>', strict_slashes=False)
+

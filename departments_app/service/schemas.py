@@ -9,7 +9,7 @@ class DepartmentSchema(ma.SQLAlchemyAutoSchema):
         model = Department
         load_instance = True
         exclude = ['id']
-        dump_only = ("uuid",)
+        # dump_only = ("uuid",)
 
 
 class EmployeeSchema(ma.SQLAlchemyAutoSchema):
@@ -17,9 +17,11 @@ class EmployeeSchema(ma.SQLAlchemyAutoSchema):
         model = Employee
         load_instance = True
         exclude = ['id']
-        dump_only = ("uuid", "department")
-        sqla_session = db.session
-    department = ma.Nested(DepartmentSchema, only=("name",))
+        dump_only = ("uuid", "department_id")
+        include_fk = True
+
+    department = ma.Nested(DepartmentSchema)
+    # department = ma.Nested(DepartmentSchema, only=("uuid", "name",))
 
 
 # Init schemas
@@ -27,5 +29,5 @@ class EmployeeSchema(ma.SQLAlchemyAutoSchema):
 department_schema = DepartmentSchema()
 departments_schema = DepartmentSchema(many=True)
 
-employee_schema = EmployeeSchema()
+employee_schema = EmployeeSchema(load_instance=False)
 employees_schema = EmployeeSchema(many=True)
