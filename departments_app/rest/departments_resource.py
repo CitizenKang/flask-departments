@@ -22,7 +22,7 @@ class Departments(Resource):
             result = departments_schema.dump(Department.query.all())
             return result, 200
         # one
-        result = department_schema.dump(Department.query.filter_by(uuid=uuid).first())
+        result = department_schema.dump(Department.get_by_uuid(uuid=uuid))
         if result:
             return result, 200
         return result, 404
@@ -59,7 +59,7 @@ class Departments(Resource):
             return {"message": "No input data provided"}, 400
         # Validate and deserialize input
         try:
-            data = department_schema.load(json_data, partial=("name", "long_name"))
+            data = department_schema.load(json_data)
         except ValidationError as err:
             return err.messages, 422
 
@@ -71,9 +71,6 @@ class Departments(Resource):
         # update record if there is updated field
         if data.name:
             db_record.name = data.name
-        if data.long_name:
-            db_record.long_name = data.long_name
-
         try:
             db.session.commit()
         except IntegrityError:

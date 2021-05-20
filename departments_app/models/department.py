@@ -9,15 +9,13 @@ class Department(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     uuid = db.Column(db.String(36), unique=True, nullable=False)
     name = db.Column(db.String(30), unique=True, index=True, nullable=False)
-    long_name = db.Column(db.String(200), nullable=False)
-    # employees = db.relationship('Employee', back_populates='employee', lazy=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.uuid = str(uuid.uuid4())
 
     def __repr__(self):
-        return f"{self.name} ({self.long_name}) [{self.uuid}]"
+        return f"[{self.uuid}] {self.name}"
 
     def create(self):
         """ Creates record"""
@@ -30,3 +28,8 @@ class Department(db.Model):
         db.session.delete(self)
         db.session.commit()
         return self
+
+    @classmethod
+    def get_by_uuid(cls, uuid: str):
+        """Fetch one record dy uuid"""
+        return cls.query.filter_by(uuid=uuid).first()

@@ -11,8 +11,8 @@ class DepartmentResourceTestCase(unittest.TestCase):
         self.app_context = self.app.app_context()
         self.app_context.push()
         db.create_all()
-        d1 = Department(name="Test_Department_1", long_name="Test long name department 1")
-        d2 = Department(name="Test_Department_2", long_name="Test long name department 2")
+        d1 = Department(name="Test_Department_1")
+        d2 = Department(name="Test_Department_2")
         db.session.add_all([d1, d2])
         db.session.commit()
         self.client = self.app.test_client()
@@ -66,13 +66,13 @@ class DepartmentResourceTestCase(unittest.TestCase):
     # POST
     def test_post_add_resource_status_code(self):
         """ Check POST return status code on successful resource add """
-        data = {"name": "test_name", "long_name": "Test long name"}
+        data = {"name": "test_name"}
         response = self.client.post('/api/departments/', json=data)
         self.assertEqual(response.status_code, 201)
 
     def test_post_add_same_resource_status_code(self):
         """ Check POST return status code on existing resource add """
-        data = {"name": "test_name", "long_name": "Test long name"}
+        data = {"name": "test_name"}
         response = self.client.post('/api/departments/', json=data)
         response = self.client.post('/api/departments/', json=data)
         self.assertEqual(response.status_code, 422)
@@ -88,7 +88,7 @@ class DepartmentResourceTestCase(unittest.TestCase):
 
     def test_post_add_resource_new_location(self):
         """ Check if uuid of new resource is returned """
-        data = {"name": "test_name", "long_name": "Test long name"}
+        data = {"name": "test_name"}
         response = self.client.post('/api/departments/', json=data)
         self.assertEqual(response.status_code, 201)
         db_record = Department.query.filter_by(name=data["name"]).first()
@@ -100,9 +100,11 @@ class DepartmentResourceTestCase(unittest.TestCase):
         """ Check PUT return status code on successful update """
         db_record = Department.query.filter_by(name='Test_Department_1').first()
         uuid = db_record.uuid
-        data = {"long_name": "New updated long name "}
+        data = {"name": "Test"}
         response = self.client.put(f'/api/departments/{uuid}', json=data)
         self.assertEqual(response.status_code, 200)
+        new_db_record = Department.query.filter_by(name='Test').first()
+        self.assertEqual(new_db_record.name, data.get("name"))
 
     def test_put_status_code_2(self):
         """ Check PUT return status code on successful update """
