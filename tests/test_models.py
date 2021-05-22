@@ -21,8 +21,8 @@ class DepartmentModelTestCase(unittest.TestCase):
         self.app_context.pop()
 
     def test_departments(self):
-        d1 = Department(name="Test_name_1", long_name="Long name for test department")
-        d2 = Department(name="Test_name_2", long_name="Long name for test department")
+        d1 = Department(name="Test_name_1")
+        d2 = Department(name="Test_name_2")
 
         Department.create(d1)
         Department.create(d2)

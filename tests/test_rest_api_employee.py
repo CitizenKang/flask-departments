@@ -61,11 +61,10 @@ class EmployeesResourceTestCase(unittest.TestCase):
 
         test_data = {"first_name": 'TestName',
                      "last_name": 'TestLastName',
-                     # "date_of_birth": 1990-10-13, ???
                      "phone_number": "0970000000",
                      "email": "TestName@gmail.com",
                      "salary": 100000.00,
-                     "department": {"uuid": self.test_department_1.uuid, "name": self.test_department_1.name}}
+                     "department": {"uuid": self.test_department_1.uuid}}
 
         response = self.client.post(f'/api/employee', json=test_data)
         self.assertEqual(response.status_code, 201)
@@ -79,18 +78,15 @@ class EmployeesResourceTestCase(unittest.TestCase):
         empty_data = {}
         test_data_no_department = {"first_name": 'Te2stName',
                                    "last_name": 'TestL3astName',
-                                   # "date_of_birth": 1990-10-13, ???
                                    "phone_number": "0970000000",
                                    "email": "TestName@gmail.com",
                                    "salary": 100000.00, }
         test_data_with_mistakes = {"firwst_name": 'TestName',
                                    "last_name": 'TestLastName',
-                                   # "date_of_birth": 1990-10-13, ???
                                    "phone_number": "0970000000",
                                    "email": "TestName@gmail.com",
                                    "salary": 100000.00,
-                                   "department": {"uuid": self.test_department_1.uuid,
-                                                  "name": self.test_department_1.name}}
+                                   "department": {"uuid": self.test_department_1.uuid}}
 
         response_empty = self.client.post('/api/employee/', json=empty_data)
         response_wrong1 = self.client.post('/api/employee/', json=test_data_no_department)
@@ -100,22 +96,17 @@ class EmployeesResourceTestCase(unittest.TestCase):
         self.assertEqual(response_wrong1.status_code, 422)
         self.assertEqual(response_wrong2.status_code, 422)
 
+        self.assertEqual(response_empty.content_type, "application/json")
+        self.assertEqual(response_wrong1.content_type, "application/json")
+        self.assertEqual(response_wrong2.content_type, "application/json")
+
     # Put
     def test_put_status_code(self):
         """ Check PUT return status code on successful update """
-        db_record = Department.query.filter_by(name='Test_Department_1').first()
-        uuid = db_record.uuid
-        data = {"long_name": "New updated long name "}
-        response = self.client.put(f'/api/departments/{uuid}', json=data)
+        uuid = self.test_employee.uuid
+        data = {"first_name": "Updated_name"}
+        response = self.client.put(f'/api/employee/{uuid}', json=data)
         self.assertEqual(response.status_code, 200)
-
-    def test_put_status_code_2(self):
-        """ Check PUT return status code on successful update """
-        db_record = Department.query.filter_by(name='Test_Department_1').first()
-        uuid = db_record.uuid
-        data = {"name": "Test_Department_2"}
-        response = self.client.put(f'/api/departments/{uuid}', json=data)
-        self.assertEqual(response.status_code, 409)
 
     # DELETE
     def test_delete_status_code(self):

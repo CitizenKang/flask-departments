@@ -47,74 +47,73 @@ class Employees(Resource):
         if not json_data:
             return {"message": "No input data provided"}, 400
 
-        # Work-Around: getting department id
+        # Validate input
         try:
-            department_dict = json_data.pop('department')
-            department_uuid = department_dict.get('uuid')
-        except KeyError:
-            return {"message": "No uuid provided for related department provided"}, 422
-
-        # Validate input (employees part)
-        try:
-            employee_schema.load(json_data)
+            data = employee_schema.load(json_data)
         except ValidationError as err:
             return err.messages, 422
 
-        department_id = Department.get_by_uuid(department_uuid).id
+        if not data[1]:
+            return {"message:": "department uuid not provided"}, 422
 
-        new_record = Employee(department_id=department_id, **json_data)
+        employee, department_uuid = data
+        department_id = Department.get_by_uuid(department_uuid).id
+        new_record = Employee(department_id=department_id, **employee)
+
         # Try to add record to db, if records exists it raise IntegrityError
         db.session.add(new_record)
         try:
             db.session.commit()
         except IntegrityError:
             return {"message": "Such record already exists"}, 422
+
         return {"message": "Added new employee", "uuid": new_record.uuid}, 201
 
+    def put(self, uuid: str):
+        """ Process PUT request on resource, updating it """
 
-#
-#     def put(self, department_uuid: str, employee_uuid: str):
-#         """ Process PUT request on resource, updating it """
-#
-#         # Check input
-#         json_data = request.get_json()
-#         if not json_data:
-#             return {"message": "No input data provided"}, 400
-#
-#         # Validate and deserialize input
-#         try:
-#             data = employee_schema.load(json_data)
-#         except ValidationError as err:
-#             return err.messages, 422
-#
-#         # query existing record in not found - return 404
-#         db_record = Employee.query.filter_by(uuid=data.uuid).one()
-#         if not db_record:
-#             return {}, 404
-#
-#         # update record if there is updated field
-#         if data.first_name:
-#             db_record.first_name = data.first_name
-#         if data.last_name:
-#             db_record.last_name = data.last_name
-#         if data.date_of_birth:
-#             db_record.date_of_birth = data.date_of_birth
-#         if data.phone_number:
-#             db_record.phone_number = data.phone_number
-#         if data.email:
-#             db_record.email = data.email
-#         if data.salary:
-#             db_record.salary = data.salary
-#         # update if another department
-#         if data.name:
-#             db_record.name = data.name
-#         if data.long_name:
-#             db_record.long_name = data.long_name
-#
-#         try:
-#             db.session.commit()
-#         except IntegrityError:
-#             return {}, 409
-#         return {"message": "resource updated"}, 200
-#
+        # Check input
+        json_data = request.get_json()
+        if not json_data:
+            return {"message": "No input data provided"}, 400
+
+        # Validate and deserialize input
+        try:
+            data = employee_schema.load(json_data, partial=True)
+        except ValidationError as err:
+            return err.messages, 422
+
+        # query existing record in not found - return 404
+        db_record = Employee.get_by_uuid(uuid)
+        if not db_record:
+            return {}, 404
+
+        employee, department_uuid = data
+        # update record if there is updated field
+        if first_name := employee.get("first_name"):
+            db_record.first_name = first_name
+        if last_name := employee.get("last_name"):
+            db_record.last_name = last_name
+        if date_of_birth := employee.get("date_of_birth"):
+            db_record.date_of_birth = date_of_birth
+        if phone_number := employee.get("phone_number"):
+            db_record.phone_number = phone_number
+        if email := employee.get("email"):
+            db_record.email = email
+        if salary := employee.get("salary"):
+            db_record.salary = salary
+
+        # update if uuid of department was given
+        if department_uuid:
+            department_id = Department.get_by_uuid(uuid=data[1].get("uuid"))
+            if department_id:
+                db_record.department_id = department_id
+
+        try:
+            db.session.commit()
+        except IntegrityError:
+            return {}, 409
+        return {"message": "resource updated"}, 200
+
+
 rest_api.add_resource(Employees, 'employee/', 'employee/<uuid>', strict_slashes=False)

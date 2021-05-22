@@ -38,17 +38,17 @@ class Departments(Resource):
             return {"message": "No input data provided"}, 400
         # Validate and deserialize input
         try:
-            data = department_schema.load(json_data)
+            data = department_schema.load(json_data, partial=("uuid",))
         except ValidationError as err:
             return err.messages, 422
 
         # Try to add record to db, if records exists it raise IntegrityError
-
+        new_record = Department(**data)
         try:
-            Department.create(data)
+            new_record.create()
         except IntegrityError:
             return {"message": "Such record already exists"}, 422
-        return {"message": "Added new department", "uuid": data.uuid}, 201
+        return {"message": "Added new department", "uuid": new_record.uuid}, 201
 
     def put(self, uuid: str):
         """ Process PUT request on resource, updating it """
@@ -59,18 +59,18 @@ class Departments(Resource):
             return {"message": "No input data provided"}, 400
         # Validate and deserialize input
         try:
-            data = department_schema.load(json_data)
+            data = department_schema.load(json_data, partial=("uuid",))
         except ValidationError as err:
             return err.messages, 422
 
         # query existing record in not found - return 404
-        db_record = Department.query.filter_by(uuid=uuid).first()
+        db_record = Department.get_by_uuid(uuid)
         if not db_record:
             return {}, 404
 
         # update record if there is updated field
-        if data.name:
-            db_record.name = data.name
+        if name := data.get("name"):
+            db_record.name = name
         try:
             db.session.commit()
         except IntegrityError:
@@ -82,12 +82,11 @@ class Departments(Resource):
         Process DELETE request on resource, deletes record with given uuid.
         Returns status code 204 on successful delete in other case - 404
         """
-        db_record = Department.query.filter_by(uuid=uuid).first()
+        db_record = Department.get_by_uuid(uuid)
         if uuid and db_record:
             Department.delete(db_record)
             return {}, 204
         return {}, 404
 
 
-rest_api.add_resource(Departments, 'departments/', 'departments/<uuid>', strict_slashes=False)
-
+rest_api.add_resource(Departments, 'department/', 'department/<uuid>', strict_slashes=False)

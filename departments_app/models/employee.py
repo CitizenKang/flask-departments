@@ -10,7 +10,7 @@ class Employee(db.Model):
     uuid = db.Column(db.String(36), unique=True, nullable=False)
     first_name = db.Column(db.String(30), index=True, nullable=False)
     last_name = db.Column(db.String(30), index=True, nullable=False)
-    date_of_birth = db.Column(db.Date, nullable=True)
+    date_of_birth = db.Column(db.Date)
     phone_number = db.Column(db.String(13), nullable=True)
     email = db.Column(db.String(254), nullable=True)
     salary = db.Column(db.Float, nullable=False)
