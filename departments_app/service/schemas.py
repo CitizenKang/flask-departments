@@ -2,7 +2,7 @@ from departments_app import ma
 from departments_app.models.department import Department
 from departments_app.models.employee import Employee
 from departments_app import db
-from marshmallow import post_load
+from marshmallow import post_load, pre_dump
 from marshmallow import ValidationError
 
 
@@ -21,10 +21,10 @@ class EmployeeSchema(ma.SQLAlchemyAutoSchema):
         dump_only = ("uuid",)
         include_fk = True
 
-    department = ma.Nested(DepartmentSchema, only=("uuid",))
+    department = ma.Nested(DepartmentSchema)
 
     @post_load
-    def foo(self, data, **kwargs):
+    def modify_input(self, data, **kwargs):
         """
         After data loaded process output and return tuple
         of dictionary for Employee model and uuid for Department
@@ -33,7 +33,6 @@ class EmployeeSchema(ma.SQLAlchemyAutoSchema):
             department_uuid = data.pop("department").get("uuid")
         except KeyError:
             department_uuid = None
-            # department_uuid = None
         employee_dict = data
         return employee_dict, department_uuid
 
