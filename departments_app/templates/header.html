@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %} Department application {% endblock %}
+
+{% block body %}
+<div class="jumbotron p-3">
+    <div class="well text-center">
+        <h1>Department management Application </h1>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col md-8">
+            <nav class="navbar navbar-expand-lg navbar-light ">
+                <div class="container-fluid">
+                    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                        <div class="navbar-nav">
+                            <a class="nav-link" href="{{url_for('main.get_departments')}}"><h3>Departments</h3></a>
+                            <a class="nav-link" href="{{url_for('main.get_employees')}}"><h3>Employees</h3></a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
