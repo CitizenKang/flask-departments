@@ -110,3 +110,30 @@ class EmployeeService:
         """
         result = Employee.query.all()
         return employees_schema.dump(result)
+
+    @staticmethod
+    def add_one_employee(data):
+        """
+
+        """
+        # Validate input
+        try:
+            data = employee_schema.load(data)
+        except ValidationError as err:
+            return err.messages, 422
+
+        if not data[1]:
+            return {"message:": "department uuid not provided"}
+
+        employee, department_uuid = data
+        department_id = Department.get_by_uuid(department_uuid).id
+        new_record = Employee(department_id=department_id, **employee)
+
+        # Try to add record to db, if records exists it raise IntegrityError
+        db.session.add(new_record)
+        try:
+            db.session.commit()
+        except IntegrityError:
+            return {"message": "Such record already exists"}
+
+        return {"message": "Added new employee", "uuid": new_record.uuid}
