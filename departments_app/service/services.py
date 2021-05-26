@@ -13,7 +13,7 @@ class DepartmentService:
     @staticmethod
     def fetch_all_departments_avg_salary_num_employees(session):
         """
-        returns result of query Department name, department uuid and
+        Returns result of query Department name, department uuid and
         average salary of all employees of each department
         number of employees of each department
 
@@ -25,18 +25,19 @@ class DepartmentService:
     @staticmethod
     def fetch_all():
         """
-        returns serialised data for collection of Departments
+        Returns serialised data for collection of Departments
         """
         query_result = Department.query.all()
         return departments_schema.dump(query_result)
 
     @staticmethod
-    def fetch_one(uuid):
+    def fetch_one(uuid: str):
         """
-        returns serialised data for one Departments object
+        Takes uuid of department and returns serialised
+        data for one Departments object
         """
         try:
-            query_result = Department.query.filter_by(uuid=uuid).one()
+            query_result = Department.get_by_uuid(uuid=uuid)
         except NoResultFound:
             return None
         return department_schema.dump(query_result)
@@ -93,9 +94,8 @@ class EmployeeService:
     @staticmethod
     def fetch_all_department_employees(department_uuid: str):
         """
-        return tuple
-        first element list of dictionaries af all employees of given department uuid
-        second element string name of department
+        Returns tuple first element list of dictionaries af all employees
+        of given department uuid, second element string name of department
         """
         department_id = Department.get_by_uuid(department_uuid).id
         department_name = Department.get_by_uuid(department_uuid).name
