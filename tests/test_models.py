@@ -30,6 +30,10 @@ class DepartmentModelTestCase(unittest.TestCase):
         self.assertIn(d1, db.session)
         self.assertIn(d2, db.session)
 
+
+
+        self.assertEqual(d1.__repr__(), f"[{d1.uuid}] {d1.name}")
+
         Department.delete(d1)
         Department.delete(d2)
 

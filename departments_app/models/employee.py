@@ -1,8 +1,9 @@
 import uuid
 from departments_app import db
+from departments_app.service.db_models_mixin import BaseDBOperationMixin
 
 
-class Employee(db.Model):
+class Employee(BaseDBOperationMixin, db.Model):
     """
     Class describes employees table
     """
@@ -23,20 +24,3 @@ class Employee(db.Model):
 
     def __repr__(self):
         return f"[{self.uuid}] {self.first_name} {self.last_name}, D.O.B.: {self.date_of_birth}"
-
-    def create(self):
-        """ Creates record"""
-        db.session.add(self)
-        db.session.commit()
-        return self
-
-    def delete(self):
-        """ Deletes record """
-        db.session.delete(self)
-        db.session.commit()
-        return self
-
-    @classmethod
-    def get_by_uuid(cls, uuid: str):
-        """Fetch one record dy uuid"""
-        return cls.query.filter_by(uuid=uuid).first()

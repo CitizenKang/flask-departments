@@ -2,7 +2,7 @@ from departments_app import ma
 from departments_app.models.department import Department
 from departments_app.models.employee import Employee
 from departments_app import db
-from marshmallow import post_load, pre_dump
+from marshmallow import post_load, pre_dump, pre_load
 from marshmallow import ValidationError
 
 

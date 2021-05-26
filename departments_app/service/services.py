@@ -66,7 +66,7 @@ class DepartmentService:
     @staticmethod
     def update_one_department(uuid, json_data):
         """
-         
+
         """
         try:
             data = department_schema.load(json_data, partial=("uuid",))
@@ -118,7 +118,7 @@ class EmployeeService:
         """
         # Validate input
         try:
-            data = employee_schema.load(data)
+            data = employee_schema.load(data, partial=True)
         except ValidationError as err:
             return err.messages, 422
 
@@ -137,3 +137,47 @@ class EmployeeService:
             return {"message": "Such record already exists"}
 
         return {"message": "Added new employee", "uuid": new_record.uuid}
+
+    @staticmethod
+    def update(uuid: str, data):
+        """
+
+        """
+        # Validate and deserialize input
+        try:
+            data = employee_schema.load(data, partial=True)
+        except ValidationError as err:
+            return err.messages
+
+        # query existing record in not found - return 404
+        db_record = Employee.get_by_uuid(uuid)
+        if not db_record:
+            return {"message": "no record"}
+
+        employee, department_uuid = data
+
+        # update record if there is updated field
+        if first_name := employee.get("first_name"):
+            db_record.first_name = first_name
+        if last_name := employee.get("last_name"):
+            db_record.last_name = last_name
+        if date_of_birth := employee.get("date_of_birth"):
+            db_record.date_of_birth = date_of_birth
+        if phone_number := employee.get("phone_number"):
+            db_record.phone_number = phone_number
+        if email := employee.get("email"):
+            db_record.email = email
+        if salary := employee.get("salary"):
+            db_record.salary = salary
+
+        # update if uuid of department was given
+        if department_uuid:
+            department_id = Department.get_by_uuid(department_uuid).id
+            if department_id:
+                db_record.department_id = department_id
+
+        try:
+            db.session.commit()
+        except IntegrityError:
+            return {}, 409
+        return {"message": "resource updated"}, 200
