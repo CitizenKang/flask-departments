@@ -1,5 +1,4 @@
 import unittest
-import uuid
 from datetime import datetime
 from departments_app import create_app, db
 from departments_app.service.services import DepartmentService
@@ -45,6 +44,11 @@ class BaseServiceTestCase(unittest.TestCase):
         db.session.remove()
         db.drop_all()
         self.app_context.pop()
+
+    # helper_method
+    def delete_all_department_records(self):
+        Department.delete(self.test_department_1)
+        Department.delete(self.test_department_2)
 
 
 if __name__ == '__main__':

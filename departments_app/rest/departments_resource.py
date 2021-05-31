@@ -38,7 +38,7 @@ class Departments(Resource):
 
         result, message = DepartmentService.add_one(json_data=json_data)
         if not result:
-            return message, 422
+            return message, 409 if message == "Such record already exists" else 422
         return message, 201
 
     def put(self, uuid: str):

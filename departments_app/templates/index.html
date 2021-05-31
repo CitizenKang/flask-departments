@@ -52,24 +52,24 @@
                     </thead>
                     {% for element in data %}
                     <tr>
-                        <td>{{ element[1] }}</td>
-                        <td>{{ element[0] }}</td>
-                        <td>{{ element[3] }}</td>
-                        <td>{{ element[2] }}</td>
+                        <td>{{ element["department_uuid"] }}</td>
+                        <td>{{ element["department_name"] }}</td>
+                        <td>{{ element["employees_count"] or "-"}}</td>
+                        <td>{{ element["average_salary"] or "-" }}</td>
                         <td>
                             <a href="/department/{{ element[1] }}/employees"> <i>details<i></a>
                         </td>
                         <td>
-                            <a href="/department/delete/{{element[1]}}" class="btn btn-primary btn-sm"
+                            <a href="/department/delete/{{element['department_uuid']}}" class="btn btn-primary btn-sm"
                                data-toggle="modal" data-target="#modaledit{{element[1]}}">Edit</a>
-                            <a href="/department/delete/{{element[1]}}" class="btn btn-danger btn-sm"
+                            <a href="/department/delete/{{element['department_uuid']}}" class="btn btn-danger btn-sm"
                                onclick="return confirm('Are You Sure To Delete ?')">Delete</a>
                         </td>
                     </tr>
 
 
                     <!-- Modal Edit Department-->
-                    <div id="modaledit{{element[1]}}" class="modal fade" role="dialog">
+                    <div id="modaledit{{element['department_uuid']}}" class="modal fade" role="dialog">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -79,9 +79,9 @@
                                     <form action="{{url_for('main.update_department')}}" method="POST">
                                         <div class="form-group">
                                             <label>Edit name:</label>
-                                            <input type="hidden" name="uuid" value="{{element[1]}}">
+                                            <input type="hidden" name="uuid" value="{{element['department_uuid']}}">
                                             <input type="text" class="form-control" name="name" maxlength="30"
-                                                   value="{{element[0]}}">
+                                                   value="{{element['department_uuid']}}">
                                         </div>
 
                                         <div class="modal-footer">

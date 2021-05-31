@@ -11,21 +11,30 @@ from marshmallow import ValidationError
 class DepartmentService:
 
     @staticmethod
-    def fetch_all_departments_avg_salary_num_employees(session):
+    def fetch_all_departments_aggregated(session):
         """
-        Returns result of query Department name, department uuid and
-        average salary of all employees of each department
-        number of employees of each department
-
+        Returns list of dictionaries with result of aggregated query for all departments:
+        columns: department name, department uuid, average employee salary, employee count
         """
-        result = session.query(Department.name, Department.uuid, func.avg(Employee.salary),
-                               func.count(Employee.first_name)).outerjoin(Employee).group_by(Department.name).all()
+        query_result = session.query(Department.name,
+                                     Department.uuid,
+                                     func.avg(Employee.salary),
+                                     func.count(Employee.first_name)).\
+                                     outerjoin(Employee).\
+                                     group_by(Department.name).all()
+        result = []
+        for element in query_result:
+            result.append({"department_name": element[0],
+                           "department_uuid": element[1],
+                           "average_salary": element[2],
+                           "employees_count": element[3]})
         return result
 
     @staticmethod
     def fetch_all():
         """
-        Returns serialised data for collection of Departments
+        Returns list of serialised dictionaries for collection of Departments objects.
+        If there no data returns empty list.
         """
         query_result = Department.query.all()
         return departments_schema.dump(query_result)
@@ -33,8 +42,8 @@ class DepartmentService:
     @staticmethod
     def fetch_one(uuid: str):
         """
-        Takes uuid of department and returns serialised
-        data for one Departments object
+        Takes uuid of department and returns serialised dictionary for one Department
+        object, if uuid not found returns None.
         """
         try:
             query_result = Department.get_by_uuid(uuid=uuid)
@@ -45,16 +54,15 @@ class DepartmentService:
     @staticmethod
     def add_one(json_data):
         """
-        takes json data, deserialize it and add to database
-        returns tuple of uuid of new object and message if success
-        or None and error message
+        Takes json data, deserialize it and add to database
+        Returns a tuple of added object uuid and dictionary of message
+        If object hasn't been added returns None and error message
         """
         # Validate and deserialize input
         try:
             data = department_schema.load(json_data, partial=("uuid",))
         except ValidationError as err:
             return None, err.messages
-
         # Try to add record to db, if records exists it raise IntegrityError
         new_record = Department(**data)
         try:

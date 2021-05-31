@@ -2,21 +2,19 @@ from flask import render_template, request, redirect, jsonify, url_for, flash
 from departments_app import create_app, db
 from . import main_bp
 from departments_app.service.services import DepartmentService, EmployeeService
-
 from departments_app.models.department import Department
 from departments_app.models.employee import Employee
-from departments_app.service.schemas import departments_schema
 
 
 @main_bp.route("/", methods=["GET", "POST"])
 def get_departments():
     # fetch all departments
     if request.method == 'GET':
-        data = DepartmentService.fetch_all_departments_avg_salary_num_employees(db.session)
+        data = DepartmentService.fetch_all_departments_aggregated(db.session)
         return render_template("index.html", data=data)
 
 
-@main_bp.route("/department/delete/<uuid>/")
+@main_bp.route("/department/delete/<uuid>/", methods=["GET", "POST"])
 def delete_department(uuid):
     db_record = Department.get_by_uuid(uuid)
     Department.delete(db_record)
@@ -112,7 +110,6 @@ def update_employee():
 @main_bp.route("/department/<uuid>/employees", methods=["GET"])
 def get_department_employees(uuid):
     if request.method == "GET":
-
         data, department_name = EmployeeService.fetch_all_department_employees(uuid)
 
         return render_template("department_employees.html", data=data, department_name=department_name)
