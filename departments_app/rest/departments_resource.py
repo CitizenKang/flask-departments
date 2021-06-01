@@ -3,6 +3,7 @@ from flask_restful import Resource
 from . import rest_api
 from departments_app.models.department import Department
 from departments_app.service.services import DepartmentService
+from sqlalchemy.exc import OperationalError, IntegrityError
 
 
 class Departments(Resource):
@@ -23,7 +24,8 @@ class Departments(Resource):
 
     def post(self):
         """
-        Process POST request on resource. Returns status code 201 and new resource.
+        Process POST request on resource. Returns status code 201 and new resource if succeeded
+        or status code and error message
         """
         # Check input
         json_data = request.get_json()
@@ -32,7 +34,7 @@ class Departments(Resource):
 
         result, message = DepartmentService.add_one(json_data=json_data)
         if not result:
-            return message, 409 if message == "Such record already exists" else 422
+            return message, 409 if message.get("message") == "Such record already exists" else 422
         return message, 201
 
     def put(self, uuid: str):
@@ -59,7 +61,11 @@ class Departments(Resource):
         """
         db_record = Department.get_by_uuid(uuid)
         if uuid and db_record:
-            Department.delete(db_record)
+            try:
+                Department.delete(db_record)
+            except IntegrityError:
+                return {}, 404
+
             return {}, 204
         return {}, 404
 

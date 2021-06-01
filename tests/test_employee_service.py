@@ -2,7 +2,7 @@ import unittest
 import uuid
 from departments_app.service.services import EmployeeService
 from departments_app.models.employee import Employee
-from base_service_tst import BaseServiceTestCase
+from base_test import BaseServiceTestCase
 
 
 class DepartmentServiceTestCase(BaseServiceTestCase):

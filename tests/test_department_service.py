@@ -2,7 +2,7 @@ import unittest
 import uuid
 from departments_app import db
 from departments_app.models.department import Department
-from base_service_tst import BaseServiceTestCase
+from base_test import BaseServiceTestCase
 
 
 class DepartmentServiceTestCase(BaseServiceTestCase):
@@ -66,8 +66,6 @@ class DepartmentServiceTestCase(BaseServiceTestCase):
         data = {"name": "TestDepartment2"}
         result, message = self.department_service.update_one_department(uuid=department_uuid, data=data)
         self.assertEqual(result, "not found", "Should be 'not found'")
-
-
 
 
 if __name__ == '__main__':

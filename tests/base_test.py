@@ -40,6 +40,8 @@ class BaseServiceTestCase(unittest.TestCase):
         db.session.commit()
         self.department_service = DepartmentService()
         self.employee_service = EmployeeService()
+        # set up flask test client
+        self.client = self.app.test_client()
 
     def tearDown(self):
         db.session.remove()
