@@ -4,7 +4,7 @@ from sqlalchemy.sql import func
 from departments_app import db
 from departments_app.service.schemas import department_schema, departments_schema
 from departments_app.service.schemas import employee_schema, employees_schema
-from sqlalchemy.exc import IntegrityError, NoResultFound
+from sqlalchemy.exc import IntegrityError
 from marshmallow import ValidationError
 
 
@@ -159,21 +159,21 @@ class EmployeeService:
         return new_record.uuid, {"message": "Added new employee", "uuid": new_record.uuid}
 
     @staticmethod
-    def update_one(uuid: str, data):
+    def update_one(uuid: str, data: dict):
         """
         Takes uuid of Employee and dictionary of values to update employee object
-        Returns dictionary - message of status
+        Returns tuple of status and message
         """
         # Validate and deserialize input
         try:
             data = employee_schema.load(data, partial=True)
         except ValidationError as err:
-            return {"validation error": err.messages}
+            return "validation error", err.messages
 
         # query existing record in not found
         db_record = Employee.get_by_uuid(uuid)
         if not db_record:
-            return {"message": "updated record not found"}
+            return "not found", {"message": "updated record not found"}
 
         employee, department_uuid = data
 
@@ -200,5 +200,5 @@ class EmployeeService:
         try:
             db.session.commit()
         except IntegrityError:
-            return {"message": "Such record already exists"}
-        return {"message": "resource updated"}
+            return "duplicate", {"message": "Such record already exists"}
+        return "OK", {"message": "resource updated"}

@@ -1,22 +1,11 @@
 import unittest
 import uuid
-from datetime import datetime
-from departments_app import create_app, db
 from departments_app.service.services import EmployeeService
-
 from departments_app.models.employee import Employee
-from departments_app.models.department import Department
 from base_service_tst import BaseServiceTestCase
 
 
 class DepartmentServiceTestCase(BaseServiceTestCase):
-
-    # def test_fetch_all_department_employees(self):
-    #     department = Department.query.filter_by(name="TestDepartment1").one()
-    #     fetched_data = self.service.fetch_one(department.uuid)
-    #     self.assertIsInstance(fetched_data, dict)
-    #     self.assertEqual(department.uuid, fetched_data['uuid'])
-    #     self.assertEqual(department.name, fetched_data['name'])
 
     def test_fetch_one_returns_data(self):
         employee = Employee.query.filter_by(first_name="John").one()
@@ -89,20 +78,22 @@ class DepartmentServiceTestCase(BaseServiceTestCase):
     def test_update_one_successfull(self):
         data = {"first_name": "test"}
         employee_uuid = self.test_employee1.uuid
-        result = EmployeeService.update_one(uuid=employee_uuid, data=data)
-        self.assertEqual(result, {"message": "resource updated"})
+        result, message = EmployeeService.update_one(uuid=employee_uuid, data=data)
+        self.assertEqual(message, {"message": "resource updated"})
+        self.assertEqual(result, "OK")
+        self.assertEqual(self.test_employee1.first_name, data.get("first_name"))
 
     def test_update_one_not_found(self):
         data = {"first_name": "test"}
         employee_uuid = str(uuid.uuid4())
-        result = EmployeeService.update_one(uuid=employee_uuid, data=data)
-        self.assertEqual(result, {"message": "updated record not found"})
+        result, message = EmployeeService.update_one(uuid=employee_uuid, data=data)
+        self.assertEqual(result, "not found")
 
     def test_update_one_not_valid_data(self):
         data = {"name": "test"}
         employee_uuid = self.test_employee1.uuid
-        result = EmployeeService.update_one(uuid=employee_uuid, data=data)
-        self.assertIsNotNone(result.get("validation error"))
+        result, message = EmployeeService.update_one(uuid=employee_uuid, data=data)
+        self.assertEqual(result, "validation error")
 
 
 if __name__ == '__main__':
