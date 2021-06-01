@@ -45,7 +45,7 @@ def add_department():
 def get_employees():
     # fetch all employees
     if request.method == 'GET':
-        data = EmployeeService.fetch_all_employees()
+        data = EmployeeService.fetch_all()
         departments = DepartmentService.fetch_all()
         return render_template("employees.html", data=data, departments=departments)
 
@@ -60,16 +60,18 @@ def add_employee():
         phone_number = request.form.get("phone_number")
         salary = request.form.get("salary")
         email = request.form.get("email")
-        department_uuid = request.form.get("department_name").split()[1]
-        department_name = request.form.get("department_name").split()[0]
+        department_uuid = request.form.get("department_name")
+
         data = {"first_name": first_name,
                 "last_name": last_name,
                 "date_of_birth": date_of_birth,
                 "phone_number": phone_number,
                 "salary": salary,
                 "email": email,
-                "department": {"uuid": department_uuid, "name": department_name}}
+                "department": {"uuid": department_uuid}}
+
         result = EmployeeService.add_one_employee(data)
+
         if result:
             flash("Employee added!!!")
             return redirect(url_for('main.get_employees'))
@@ -110,6 +112,6 @@ def update_employee():
 @main_bp.route("/department/<uuid>/employees", methods=["GET"])
 def get_department_employees(uuid):
     if request.method == "GET":
-        data, department_name = EmployeeService.fetch_all_department_employees(uuid)
+        data, department_name = EmployeeService.fetch_all_of_department(uuid)
 
         return render_template("department_employees.html", data=data, department_name=department_name)

@@ -19,9 +19,9 @@ class DepartmentService:
         query_result = session.query(Department.name,
                                      Department.uuid,
                                      func.avg(Employee.salary),
-                                     func.count(Employee.first_name)).\
-                                     outerjoin(Employee).\
-                                     group_by(Department.name).all()
+                                     func.count(Employee.first_name)). \
+            outerjoin(Employee). \
+            group_by(Department.name).all()
         result = []
         for element in query_result:
             result.append({"department_name": element[0],
@@ -45,9 +45,8 @@ class DepartmentService:
         Takes uuid of department and returns serialised dictionary for one Department
         object, if uuid not found returns None.
         """
-        try:
-            query_result = Department.get_by_uuid(uuid=uuid)
-        except NoResultFound:
+        query_result = Department.get_by_uuid(uuid=uuid)
+        if not query_result:
             return None
         return department_schema.dump(query_result)
 
@@ -99,8 +98,26 @@ class DepartmentService:
 
 
 class EmployeeService:
+
     @staticmethod
-    def fetch_all_department_employees(department_uuid: str):
+    def fetch_one(uuid: str):
+        """
+        Takes uuid of employee and returns serialised dictionary for one Employee
+        object, if uuid not found returns empty dictionary.
+        """
+        query_result = Employee.get_by_uuid(uuid=uuid)
+        if not query_result:
+            return None
+        return employee_schema.dump(query_result)
+
+    @staticmethod
+    def fetch_all():
+        """ Returns list of dictionaries af all employees """
+        result = Employee.query.all()
+        return employees_schema.dump(result)
+
+    @staticmethod
+    def fetch_all_of_department(department_uuid: str):
         """
         Returns tuple first element list of dictionaries af all employees
         of given department uuid, second element string name of department
@@ -112,26 +129,20 @@ class EmployeeService:
             return employees_schema.dump(result), department_name
 
     @staticmethod
-    def fetch_all_employees():
+    def add_one(data):
         """
-        return first element list of dictionaries af all employees
-        """
-        result = Employee.query.all()
-        return employees_schema.dump(result)
-
-    @staticmethod
-    def add_one_employee(data):
-        """
-
+        Takes json data, deserialize it and add to database
+        Returns a tuple of added object uuid and dictionary of message
+        If object hasn't been added returns None and error message
         """
         # Validate input
         try:
             data = employee_schema.load(data, partial=True)
         except ValidationError as err:
-            return err.messages, 422
-
+            return None, err.messages
+        # Check if data for related department provided
         if not data[1]:
-            return {"message:": "department uuid not provided"}
+            return None, {"message:": "department uuid not provided"}
 
         employee, department_uuid = data
         department_id = Department.get_by_uuid(department_uuid).id
@@ -142,25 +153,25 @@ class EmployeeService:
         try:
             db.session.commit()
         except IntegrityError:
-            return {"message": "Such record already exists"}
-
-        return {"message": "Added new employee", "uuid": new_record.uuid}
+            return None, {"message": "Such record already exists"}
+        return new_record.uuid, {"message": "Added new employee", "uuid": new_record.uuid}
 
     @staticmethod
-    def update(uuid: str, data):
+    def update_one(uuid: str, data):
         """
-
+        Takes uuid of Employee and dictionary of values to update employee object
+        Returns dictionary - message of status
         """
         # Validate and deserialize input
         try:
             data = employee_schema.load(data, partial=True)
         except ValidationError as err:
-            return err.messages
+            return {"validation error": err.messages}
 
-        # query existing record in not found - return 404
+        # query existing record in not found
         db_record = Employee.get_by_uuid(uuid)
         if not db_record:
-            return {"message": "no record"}
+            return {"message": "updated record not found"}
 
         employee, department_uuid = data
 
@@ -187,5 +198,5 @@ class EmployeeService:
         try:
             db.session.commit()
         except IntegrityError:
-            return {}, 409
-        return {"message": "resource updated"}, 200
+            return {"message": "Such record already exists"}
+        return {"message": "resource updated"}

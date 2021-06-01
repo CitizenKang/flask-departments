@@ -1,7 +1,7 @@
 import unittest
 from datetime import datetime
 from departments_app import create_app, db
-from departments_app.service.services import DepartmentService
+from departments_app.service.services import DepartmentService, EmployeeService
 from departments_app.models.department import Department
 from departments_app.models.employee import Employee
 
@@ -38,17 +38,13 @@ class BaseServiceTestCase(unittest.TestCase):
 
         db.session.add_all([self.test_department_1, self.test_department_2, self.test_employee1, self.test_employee2])
         db.session.commit()
-        self.service = DepartmentService()
+        self.department_service = DepartmentService()
+        self.employee_service = EmployeeService()
 
     def tearDown(self):
         db.session.remove()
         db.drop_all()
         self.app_context.pop()
-
-    # helper_method
-    def delete_all_department_records(self):
-        Department.delete(self.test_department_1)
-        Department.delete(self.test_department_2)
 
 
 if __name__ == '__main__':
