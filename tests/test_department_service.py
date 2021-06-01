@@ -48,8 +48,26 @@ class DepartmentServiceTestCase(BaseServiceTestCase):
         self.assertIsNotNone(message, result)
         self.assertIsInstance(message, dict)
 
-    def test_update_one(self):
-        pass
+    def test_update_one_successful(self):
+        department_uuid = self.test_department_1.uuid
+        data = {"name": "Department"}
+        result, message = self.department_service.update_one_department(uuid=department_uuid, data=data)
+        self.assertEqual(result, "OK", "Should be 'OK'")
+        self.assertEqual(self.test_department_1.name, "Department", "Should be 'Department'")
+
+    def test_update_one_validation_error(self):
+        department_uuid = self.test_department_1.uuid
+        data = {"Name": "Department"}
+        result, message = self.department_service.update_one_department(uuid=department_uuid, data=data)
+        self.assertEqual(result, "validation error", "Should be 'validation error'")
+
+    def test_update_one_validation_duplicate(self):
+        department_uuid = str(uuid.uuid4())
+        data = {"name": "TestDepartment2"}
+        result, message = self.department_service.update_one_department(uuid=department_uuid, data=data)
+        self.assertEqual(result, "not found", "Should be 'not found'")
+
+
 
 
 if __name__ == '__main__':
