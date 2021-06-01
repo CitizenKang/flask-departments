@@ -72,19 +72,21 @@ class DepartmentService:
         return new_record.uuid, {"message": "Added new department", "uuid": new_record.uuid}
 
     @staticmethod
-    def update_one_department(uuid, json_data):
+    def update_one_department(uuid: str, data: dict):
         """
-
+        Takes uuid of department obj and data
+        and updated department obj
+        returns tuple of status and message
         """
         try:
-            data = department_schema.load(json_data, partial=("uuid",))
+            data = department_schema.load(data, partial=("uuid",))
         except ValidationError as err:
-            return 'validation error', err.messages
+            return "validation error", err.messages
 
         # query existing record in not found - return 404
         db_record = Department.get_by_uuid(uuid)
         if not db_record:
-            return 'not found', 404
+            return "not found", {"message": "record for update not found"}
 
         # update record if there is updated field
         if name := data.get("name"):
@@ -92,9 +94,9 @@ class DepartmentService:
         try:
             db.session.commit()
         except IntegrityError:
-            return {}, 409
+            return "duplicate", {"message": "Such record already exists"}
 
-        return {"message": "resource updated"}, 200
+        return "OK", {"message": "resource updated"}
 
 
 class EmployeeService:

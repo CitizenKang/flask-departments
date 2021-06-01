@@ -1,7 +1,6 @@
 from departments_app import db
 
 
-
 class BaseDBOperationMixin:
     """
     Mixin class extends db Models with some basic operations
