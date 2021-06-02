@@ -1,11 +1,7 @@
 from flask import request
 from flask_restful import Resource
-from marshmallow import ValidationError
-from sqlalchemy.exc import IntegrityError
 from . import rest_api
 from departments_app.models.employee import db, Employee
-from departments_app.models.department import Department
-from departments_app.service.schemas import employee_schema, employees_schema
 from departments_app.service.services import EmployeeService
 
 

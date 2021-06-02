@@ -57,7 +57,7 @@
                         <td>{{ element["employees_count"] or "-"}}</td>
                         <td>{{ element["average_salary"] or "-" }}</td>
                         <td>
-                            <a href="/department/{{ element[1] }}/employees"> <i>details<i></a>
+                            <a href="/department/{{ element['department_uuid'] }}/employees"> <i>details<i></a>
                         </td>
                         <td>
                             <a href="/department/delete/{{element['department_uuid']}}" class="btn btn-primary btn-sm"

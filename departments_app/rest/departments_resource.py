@@ -1,9 +1,9 @@
 from flask import request
 from flask_restful import Resource
 from . import rest_api
+from sqlalchemy.exc import IntegrityError
 from departments_app.models.department import Department
 from departments_app.service.services import DepartmentService
-from sqlalchemy.exc import IntegrityError
 
 
 class Departments(Resource):
