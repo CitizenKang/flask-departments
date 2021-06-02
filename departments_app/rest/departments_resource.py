@@ -3,7 +3,7 @@ from flask_restful import Resource
 from . import rest_api
 from departments_app.models.department import Department
 from departments_app.service.services import DepartmentService
-from sqlalchemy.exc import OperationalError, IntegrityError
+from sqlalchemy.exc import IntegrityError
 
 
 class Departments(Resource):
@@ -43,7 +43,6 @@ class Departments(Resource):
         json_data = request.get_json()
         if not json_data:
             return {"message": "No input data provided"}, 400
-
         result, message = DepartmentService.update_one_department(uuid=uuid, data=json_data)
         if result == 'validation error':
             return message, 422
@@ -51,7 +50,6 @@ class Departments(Resource):
             return message, 404
         if result == "duplicate":
             return message, 409
-
         return message, 200
 
     def delete(self, uuid: str):

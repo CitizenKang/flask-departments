@@ -142,14 +142,12 @@ class EmployeeService:
             data = employee_schema.load(data, partial=True)
         except ValidationError as err:
             return None, err.messages
-        # Check if data for related department provided
-        if not data[1]:
-            return None, {"message:": "department uuid not provided"}
-
         employee, department_uuid = data
+        # Check if data for related department provided
+        if not department_uuid:
+            return None, {"message:": "department uuid not provided"}
         department_id = Department.get_by_uuid(department_uuid).id
         new_record = Employee(department_id=department_id, **employee)
-
         # Try to add record to db, if records exists it raise IntegrityError
         db.session.add(new_record)
         try:
