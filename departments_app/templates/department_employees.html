@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% include 'header.html' %}
+
+
+{% block title %} Employees {% endblock %}
+
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col md-12">
+            <div class="jumbotron p-3">
+                <h4> Employees of <i><b/>{{ department_name}}</b> </i> department</h4>
+
+                <!--table-->
+                <table class="table table-striped">
+                    <thead class="table-dark">
+                    <tr>
+                        <th> Employee ID</th>
+                        <th> First name</th>
+                        <th> Last name</th>
+                        <th> Date of birth</th>
+                        <th> Phone number</th>
+                        <th> Email</th>
+                        <th> Salary</th>
+
+                    </tr>
+                    </thead>
+                    {% for element in data %}
+                    <tr>
+                        <td>{{ element['uuid'] }}</td>
+                        <td>{{ element['first_name'] }}</td>
+                        <td>{{ element['last_name'] }}</td>
+                        <td>{{ element['date_of_birth'] }}</td>
+                        <td>{{ element['phone_number'] }}</td>
+                        <td>{{ element['email'] }}</td>
+                        <td>{{ element['salary'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

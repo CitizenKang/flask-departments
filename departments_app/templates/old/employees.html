@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block navbar %}
+{% endblock %}
+
+
+{% block table %}
+
+<table class="table table-striped">
+    <thead class="table-dark">
+    <tr>
+        <th> Employee identifier</th>
+        <th> First name</th>
+        <th> Last name</th>
+        <th> Date of birth</th>
+        <th> Phone number</th>
+        <th> Email</th>
+        <th> Salary</th>
+        <th> Department</th>
+        <th> Operation </th>
+    </tr>
+    </thead>
+    {% for element in data %}
+    <tr>
+        <td>{{ element['uuid'] }}</td>
+        <td>{{ element['first_name'] }}</td>
+        <td>{{ element['last_name'] }}</td>
+        <td>{{ element['date_of_birth'] }}</td>
+        <td>{{ element['phone_number'] }}</td>
+        <td>{{ element['email'] }}</td>
+        <td>{{ element['salary'] }}</td>
+        <td>{{ element['department']['name'] }}</td>
+        <td>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" href="#change-department">
+                Edit
+            </button>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" href="#delete-department">
+                Delete
+            </button>
+        </td>
+    </tr>
+    {% endfor %}
+
+
+    {% endblock %}

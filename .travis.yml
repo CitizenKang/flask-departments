@@ -8,5 +8,6 @@ install:
   - pip install -r requirements.txt
 
 script:
+  - python -m unittest discover tests
   - coverage run --omit */venv/* main.py -m unittest tests/test*
   - coveralls

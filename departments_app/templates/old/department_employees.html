@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block navbar %}
+
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand">Employees of {{ department_name }} department </a>
+
+        <form class="container-fluid justify-content-start">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" href="#add-employee" type="submit">Add
+                employee
+            </button>
+        </form>
+
+        <form class="d-flex">
+            <input type="date" id="start" name="date-of-birth-start" value="2020-05-01">
+            <input type="date" id="end" name="date-of-birth-end">
+            <!-- <input class="form-control me-2" type="search" placeholder="Employee Search" aria-label="Search"> -->
+            <button class="btn btn-outline-success" type="submit">Search by date of birth</button>
+        </form>
+    </div>
+    </div>
+</nav>
+
+
+{% endblock %}
+
+
+{% block table %}
+
+<table class="table table-striped">
+    <thead class="table-dark">
+    <tr>
+        <th> uuid</th>
+        <th> first name</th>
+        <th> last name</th>
+        <th> date of birth</th>
+        <th> phone number</th>
+        <th> email</th>
+        <th> salary</th>
+    </tr>
+    </thead>
+    {% for element in data %}
+    <tr>
+        <td>{{ element['uuid'] }}</td>
+        <td>{{ element['first_name'] }}</td>
+        <td>{{ element['last_name'] }}</td>
+        <td>{{ element['date_of_birth'] }}</td>
+        <td>{{ element['phone_number'] }}</td>
+        <td>{{ element['email'] }}</td>
+        <td>{{ element['salary'] }}</td>
+    </tr>
+    {% endfor %}
+
+    <div id="add-employee" class="modal" tabindex="-1">
+
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add new employee to department</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Enter information about new employee</p>
+                    <form method="POST">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="inputGroup-sizing-default">First name</span>
+                            <input type="text" class="form-control" aria-label="Sizing example input"
+                                   aria-describedby="inputGroup-sizing-default" name="first_name">
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Last name</span>
+                            <input type="text" class="form-control" aria-label="Sizing example input"
+                                   aria-describedby="inputGroup-sizing-default" name="last_name">
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Date of birth</span>
+                            <input type="text" class="form-control" aria-label="Sizing example input"
+                                   aria-describedby="inputGroup-sizing-default" name="date_of_birth">
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Phone number</span>
+                            <input type="text" class="form-control" aria-label="Sizing example input"
+                                   aria-describedby="inputGroup-sizing-default" name="phone_number">
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Email</span>
+                            <input type="text" class="form-control" aria-label="Sizing example input"
+                                   aria-describedby="inputGroup-sizing-default" name="email">
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Salary</span>
+                            <input type="text" class="form-control" aria-label="Sizing example input"
+                                   aria-describedby="inputGroup-sizing-default" name="salary">
+                        </div>
+
+                </div>
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary">Add</button>
+                    </form>
+
+                    </form>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endblock %}

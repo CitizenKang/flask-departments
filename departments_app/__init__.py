@@ -21,4 +21,7 @@ def create_app(config_name):
     from .rest import rest_api_bp as rest_blueprint
     app.register_blueprint(rest_blueprint)
 
+    from .views import main_bp as main_blueprint
+    app.register_blueprint(main_blueprint)
+
     return app

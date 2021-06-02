@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% include 'header.html' %}
+
+
+{% block title %} Departments {% endblock %}
+
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col md-12">
+            <div class="jumbotron p-3 ">
+                <h4>Manage <b>Departments </b>
+
+                    <button type="button" class="btn btn-success float-md-right" data-toggle="modal"
+                            data-target="#add-department">New Department
+                    </button>
+
+                </h4>
+                {% with messages = get_flashed_messages() %}
+
+                {% if messages %}
+
+                {% for message in messages %}
+
+                <div class="alert alert-success alert-dismissable" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                        <span aria-hidden="true">x</span>
+                    </button>
+
+
+                    {{message}}
+                </div>
+
+
+                {% endfor %}
+
+                {% endif %}
+                {% endwith %}
+
+                <!--table-->
+                <table class="table table-striped">
+                    <thead class="table-dark">
+                    <tr>
+                        <th> Department ID</th>
+                        <th> Department name</th>
+                        <th> Number of employees</th>
+                        <th> Average salary</th>
+                        <th> Department details</th>
+                        <th> Operation</th>
+                    </tr>
+                    </thead>
+                    {% for element in data %}
+                    <tr>
+                        <td>{{ element["department_uuid"] }}</td>
+                        <td>{{ element["department_name"] }}</td>
+                        <td>{{ element["employees_count"] or "-"}}</td>
+                        <td>{{ element["average_salary"] or "-" }}</td>
+                        <td>
+                            <a href="/department/{{ element['department_uuid'] }}/employees"> <i>details<i></a>
+                        </td>
+                        <td>
+                            <a href="/department/delete/{{element['department_uuid']}}" class="btn btn-primary btn-sm"
+                               data-toggle="modal" data-target="#modaledit{{element[1]}}">Edit</a>
+                            <a href="/department/delete/{{element['department_uuid']}}" class="btn btn-danger btn-sm"
+                               onclick="return confirm('Are You Sure To Delete ?')">Delete</a>
+                        </td>
+                    </tr>
+
+
+                    <!-- Modal Edit Department-->
+                    <div id="modaledit{{element['department_uuid']}}" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Update Information</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="{{url_for('main.update_department')}}" method="POST">
+                                        <div class="form-group">
+                                            <label>Edit name:</label>
+                                            <input type="hidden" name="uuid" value="{{element['department_uuid']}}">
+                                            <input type="text" class="form-control" name="name" maxlength="30"
+                                                   value="{{element['department_uuid']}}">
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button class="btn btn-primary" type="submit">Update</button>
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                </table>
+            </div>
+
+
+            <!-- Modal Add Department-->
+            <div id="add-department" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Add Department</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form action="{{url_for('main.add_department')}}" method="POST">
+                                <div class="form-group">
+                                    <label>Enter new Name:</label>
+                                    <input type="text" class="form-control" name="name" required="1" maxlength="30">
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button class="btn btn-primary" type="submit">Add Department</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
